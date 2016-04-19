@@ -69,7 +69,7 @@ var testdbfunc = function(){
 
     // Find everything 
     app.get('/api/cars', function(req, res){
-        console.log(req.query);
+        //console.log(req.query);
        
         //limit (return  limited items)
         if (req.query.limit) {
@@ -78,9 +78,9 @@ var testdbfunc = function(){
                 res.json(cars);
             });
         
-        //return only fields
+        //return only with field
         } else if(req.query.fields){
-            console.log(req.query.fields);
+            //console.log(req.query.fields);
             Car.find().select(req.query.fields).exec(function (err, cars) {
                 if (err) return handleError(err);
                 res.json(cars);
@@ -88,15 +88,14 @@ var testdbfunc = function(){
         
         //return with offset (skipped items)
         } else if(req.query.offset){
-            console.log(req.query.offset);
+            //console.log(req.query.offset);
             Car.find().skip(req.query.offset).exec(function (err, cars) {
                 if (err) return handleError(err);
                 res.json(cars);
             });
 
-        // 
-        } else if(req.query.offset){
-            console.log(req.query);
+        // return with filter
+        } else if(req.query){
             Car.find(req.query).exec(function (err, cars) {
                 if (err) return handleError(err);
                 res.json(cars);
@@ -110,15 +109,6 @@ var testdbfunc = function(){
                 res.json(cars);
             });
         }
-          // Car.find({ occupation: /host/ }).
-          // where('name.last').equals('Ghost').
-          // where('age').gt(17).lt(66).
-          // where('likes').in(['vaporizing', 'talking']).
-          // limit(10).
-          // sort('-occupation').
-          // select('name occupation').
-          // exec(callback);
-
     });
     
 
