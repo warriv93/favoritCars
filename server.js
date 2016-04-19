@@ -41,35 +41,6 @@ var testdbfunc = function(){
     //    console.log('Test car saved successfully');
     //  });
 
-    // Find everything 
-    app.get('/api/cars', function(req, res){
-       
-
-        Car.find(function (err, cars) {
-          if (err) return handleError(err);
-            //console.log(cars);
-            res.json(cars);
-        });
-    });
-
- // app.get('/api/cars/:limit', function(req, res){
-
-
-
- //      Car.find(function (err, cars) {
- //          if (err) return console.error(err);
- //          console.log(cars);
- //          res.json(cars);
- //      });
- //    });
-
-
-
-
-// Movie.findOne({ title: 'Thor' }, function(err, thor) {
-//   if (err) return console.error(err);
-//   console.dir(thor);
-// });
 
 
 
@@ -90,17 +61,71 @@ var testdbfunc = function(){
 
          // Save to the mongo DB
         newCar.save ( function(err, response){
-              if (err) return handleError(err);
+              if (err) return console.error(err);
             //console.log(response);
             res.json(response);
         });
     });
 
+    // Find everything 
+    app.get('/api/cars', function(req, res){
+        console.log(req.query);
+       
+        //limit (return  limited items)
+        if (req.query.limit) {
+            Car.find().limit(req.query.limit).exec(function (err, cars) {
+                if (err) return handleError(err);
+                res.json(cars);
+            });
+        
+        //return only fields
+        } else if(req.query.fields){
+            console.log(req.query.fields);
+            Car.find().select(req.query.fields).exec(function (err, cars) {
+                if (err) return handleError(err);
+                res.json(cars);
+            });
+        
+        //return with offset (skipped items)
+        } else if(req.query.offset){
+            console.log(req.query.offset);
+            Car.find().skip(req.query.offset).exec(function (err, cars) {
+                if (err) return handleError(err);
+                res.json(cars);
+            });
+
+        // 
+        } else if(req.query.offset){
+            console.log(req.query);
+            Car.find(req.query).exec(function (err, cars) {
+                if (err) return handleError(err);
+                res.json(cars);
+            });
+
+        //return all items
+        } else{
+            Car.find(function (err, cars) {
+              if (err) return handleError(err);
+                //console.log(cars);
+                res.json(cars);
+            });
+        }
+          // Car.find({ occupation: /host/ }).
+          // where('name.last').equals('Ghost').
+          // where('age').gt(17).lt(66).
+          // where('likes').in(['vaporizing', 'talking']).
+          // limit(10).
+          // sort('-occupation').
+          // select('name occupation').
+          // exec(callback);
+
+    });
+    
+
     //Get Car by id
     app.get('/api/cars/:id', function(req, res){
         Car.findOne({'_id': req.params.id}, function(err, response){
-             if (err) return handleError(err);
-            
+             if (err) return console.error(err);
              // If the result exists (Car found)
             if(response) {
                   res.json(response);
@@ -111,14 +136,15 @@ var testdbfunc = function(){
                    res.json(false);
                 }
         });
-    });
+   });
 
-    //DELETE /cars/{id} - Delete a specific car resource
+   
+//DELETE /cars/{id} - Delete a specific car resource
     app.delete('/api/cars/:id', function(req, res){
         //console.log("REMOVE id", req.params.id);
         //send response back to controller
         Car.remove({_id : req.params.id}, function(err, response){
-            if (err) return handleError(err);
+            if (err) return console.error(err);
             //console.log(response);
             res.json(response);
         });
@@ -142,7 +168,6 @@ var testdbfunc = function(){
             res.json(response);
         });
     });
-
 
 }
     
